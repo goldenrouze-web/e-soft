@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Flask MySQL API</title>
+</head>
+<body>
+<h1>Загрузка CSV</h1>
+<input type="file" id="fileInput">
+<button onclick="uploadFile()">Загрузить</button>
+
+<h2>Очистка данных</h2>
+<input type="text" id="filenameClean" placeholder="Введите имя файла">
+<button onclick="cleanData()">Очистить</button>
+
+<h2>Статистика данных</h2>
+<input type="text" id="filenameStats" placeholder="Введите имя файла">
+<button onclick="showStats()">Показать статистику</button>
+
+<pre id="output"></pre>
+
+<script>
+function uploadFile() {
+    const input = document.getElementById("fileInput");
+    if (!input.files.length) return alert("Выберите файл");
+
+    const formData = new FormData();
+    formData.append("file", input.files[0]);
+
+    fetch("/upload", { method: "POST", body: formData })
+    .then(res => res.json())
+    .then(data => document.getElementById("output").textContent = JSON.stringify(data, null, 2));
+}
+
+function cleanData() {
+    const filename = document.getElementById("filenameClean").value;
+    fetch(`/data/clean?file=${filename}`)
+    .then(res => res.json())
+    .then(data => document.getElementById("output").textContent = JSON.stringify(data, null, 2));
+}
+
+function showStats() {
+    const filename = document.getElementById("filenameStats").value;
+    fetch(`/data/stats?file=${filename}`)
+    .then(res => res.json())
+    .then(data => document.getElementById("output").textContent = JSON.stringify(data, null, 2));
+}
+</script>
+</body>
+</html>
